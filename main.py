@@ -1,44 +1,35 @@
-class User():
-    """
-    Класс объекта: фамилия, имя, отчество, название организации,
-    телефон рабочий, телефон личный (сотовый)
-    """
-    def __init__(self, firstname=None, lastname=None, patronymic=None, organization_name=None,
-                 work_phone=None, personal_phone=None) -> None:
-        self.firstname = firstname
-        self.lastname = lastname
-        self.patronymic = patronymic
-        self.organization_name = organization_name
-        self.work_phone = work_phone
-        self.personal_phone = personal_phone
-
-    
-    def __str__(self) -> str:
-        return (f'Фамилия: {self.firstname}\n'
-                f'Имя: {self.lastname}\n'
-                f'Отчество: {self.patronymic}\n'
-                f'название организации: {self.organization_name}\n'
-                f'телефон рабочий: {self.work_phone}\n'
-                f'телефон личный: {self.personal_phone}\n')
+import json
+import logging
 
 
-def print_phone_book():
+logging.basicConfig(level=logging.DEBUG, encoding='utf-8')
+
+
+DI = {
+    'firstname': 'Имя',
+    'lastname': 'Фамилия',
+    'patronymic': 'Отчество',
+    'organization_name': 'Название организации',
+    'work_phone': 'Телефон рабочий',
+    'personal_phone': 'Телефон личный'
+}
+
+
+def print_phone_book(phone_book):
     """ Вывод записей построчно """
-    pass
+    for i in phone_book:
+        user = []
+        for key, value in i.items():
+            user.append(f'{DI[key]}: {value}')
+        print(', '.join(user))
 
 
 def creating_record():
     """ Добавление новой записи пользователя """
     print('Создание новой записи')
-    new_user = User()
-    new_user.firstname = input('Имя: ')
-    new_user.lastname = input('Фамилия: ')
-    new_user.patronymic = input('Отчество: ')
-    new_user.organization_name = input('название организации: ')
-    new_user.work_phone = input('телефон рабочий: ')
-    new_user.personal_phone = input('телефон личный: ')
+    new_user = {key: input(f'{value}: ') for key, value in DI.items()}
     phone_book.append(new_user)
-    
+    print('Запись добавлена')
 
 
 def editing_an_entry():
@@ -46,27 +37,45 @@ def editing_an_entry():
     pass
 
 
-def search_record():
+def search_record(name):
     """ Поиск записей """
-    pass
+    
+    search_result = [
+        value
+        for value in phone_book
+        if value['firstname'] == name
+    ]
+    print_phone_book(search_result)
 
 
 if __name__ == '__main__':
-    phone_book = []    # телефонная книга
+    phone_book = []
+    try:
+        with open('data_file.json', 'r', encoding='utf-8') as read_file:
+            phone_book = json.load(read_file)
+    except FileNotFoundError:
+        logging.debug('файл отсутствует')
     while True:
         print('Выбор действия:\n'
-              '1 - \n'
-              '2 - создать запись\n')
-        action = input('номер действия:')
+              '1 - вывод записей\n'
+              '2 - создать запись\n'
+              '3 - редактирование записи\n'
+              '4 - поиск записи\n'
+              '0 - завершить работу')
+        action = input('номер действия: ')
         if action == '0':
             print('Завершение работы, возвращайтесь еще!')
+            with open('data_file.json', 'w', encoding='utf-8') as write_file:
+                json.dump(phone_book, write_file, ensure_ascii=False)
             break
+        elif action == '1':
+            print_phone_book(phone_book)
         elif action == '2':
             creating_record()
-            print(phone_book)
-        
-
-    # print_phone_book()
-    
-    # editing_an_entry()
-    # search_record()
+        elif action == '3':
+            editing_an_entry()
+        elif action == '4':
+            name = input('firstname: ')
+            search_record(name)
+        else:
+            print('операция не определена')
