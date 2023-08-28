@@ -15,7 +15,7 @@ DI = {
 }
 
 
-def print_phone_book(phone_book):
+def print_phone_book(phone_book: list) -> None:
     """ Вывод записей построчно """
     for i in phone_book:
         user = []
@@ -37,13 +37,13 @@ def editing_an_entry():
     pass
 
 
-def search_record(name):
+def search_record(**kwargs) -> None:
     """ Поиск записей """
     
     search_result = [
         value
         for value in phone_book
-        if value['firstname'] == name
+        if value['firstname'] == kwargs[name]
     ]
     print_phone_book(search_result)
 
@@ -75,7 +75,27 @@ if __name__ == '__main__':
         elif action == '3':
             editing_an_entry()
         elif action == '4':
-            name = input('firstname: ')
-            search_record(name)
+            params = {}    # словарь с параметрами
+            print('Выбор характеристики по которой будет произведен поиск:\n'
+                  '1 - Имя\n'
+                  '2 - Фамилия\n'
+                  '3 - Отчество\n'
+                  '4 - Название организации\n'
+                  '5 - Телефон рабочий\n'
+                  '6 - Телефон личный\n'
+                  '0 - Поиск'
+                  )
+            # вспомогательный список для выбора характеристики
+            menu = ['Поиск', 'firstname', 'lastname', 'patronymic', 'organization_name',
+                    'work_phone', 'personal_phone']
+            while True:
+                number = input('Номер параметра: ')
+                key = menu[int(number)]
+                if number == '0':
+                    break    # все параметры выбраны, начало поиска
+                elif key in DI:
+                    value = input('Значение: ')
+                    params[key] = value    # добавляются параметры для поиска
+            search_record(**params)
         else:
             print('операция не определена')
