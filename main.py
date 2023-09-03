@@ -39,7 +39,10 @@ def creating_record(phone_book, last_id):
 
 def editing_an_entry():
     """ Редактирование записи пользователя """
-    pass
+    id_user = input('id: ')
+    usr = [user for user in phone_book if user['id'] == id_user]
+    for key, value in usr[0].items():
+        print(key, value)
 
 
 def search_record(phone_book: list, **kwargs) -> list:
@@ -107,14 +110,12 @@ if __name__ == '__main__':
             creating_record(phone_book, int(phone_book[-1]['id']))
         elif action == '3':
             print(
-                '1 - Ввести id контакта для редактирования'
+                '1 - Ввести id контакта для редактирования\n'
                 '2 - Перейти к поиску контакта')
             number = input('Номер параметра: ')
-            if number == 1:
-                id_user = input('id: ')
-                for user in phone_book:
-                    
-            if number == 2:
+            if number == '1':
+                editing_an_entry()
+            if number == '2':
                 params = entering_search_parameters()    # выбор параметров
                 user = search_record(phone_book, **params)    # поиск
                 print_phone_book(user)
