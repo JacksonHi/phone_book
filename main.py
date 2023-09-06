@@ -4,7 +4,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO, encoding='utf-8')
 
-
+# словарь для красивой печати ключей в терминале
 DI = {
     'firstname': 'Имя',
     'lastname': 'Фамилия',
@@ -28,8 +28,11 @@ def print_phone_book(phone_book: list) -> None:
         print(', '.join(user))
 
 
-def creating_record(phone_book, last_id):
-    """ Добавление новой записи пользователя """
+def creating_record(phone_book, last_id) -> None:
+    """ 
+    Добавление новой записи пользователя. Вторым аргументом принимает
+    id последней записи в phone_book.
+    """
     print('Создание новой записи')
     new_user = {key: input(f'{value}: ') for key, value in DI.items()}
     new_user['id'] = str(last_id + 1)
@@ -37,12 +40,18 @@ def creating_record(phone_book, last_id):
     print('Запись добавлена')
 
 
-def editing_an_entry():
+def editing_an_entry() -> None:
     """ Редактирование записи пользователя """
     id_user = input('id: ')
-    usr = [user for user in phone_book if user['id'] == id_user]
-    for key, value in usr[0].items():
-        print(key, value)
+    users = [user for user in phone_book if user['id'] == id_user]
+    print('Если не собираетесь менять значение, нажмите Enter')
+    for key, value in users[0].items():
+        if key == 'id':    # id остается без изменений
+            continue
+        get_new_value = input(f'{DI[key]}: {value} \nНовое {DI[key]}: ')
+        if get_new_value != '':
+            users[0][key] = get_new_value
+    
 
 
 def search_record(phone_book: list, **kwargs) -> list:
@@ -119,6 +128,9 @@ if __name__ == '__main__':
                 params = entering_search_parameters()    # выбор параметров
                 user = search_record(phone_book, **params)    # поиск
                 print_phone_book(user)
+                print('Введите id контакта для редактирования')
+                editing_an_entry()
+            print('Редактирование завершено')
         elif action == '4':
             params = entering_search_parameters()    # выбор параметров
             list_found_items = search_record(phone_book, **params)    # поиск
